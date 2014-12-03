@@ -1,7 +1,6 @@
 package com.pahimar.ee3.recipe;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.pahimar.ee3.api.RecipeRegistryProxy;
 import com.pahimar.ee3.exchange.WrappedStack;
 import com.pahimar.ee3.util.RecipeHelper;
 import net.minecraft.item.ItemStack;
@@ -12,27 +11,12 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecipesVanilla
 {
-    private static Multimap<WrappedStack, List<WrappedStack>> vanillaRecipes = null;
-
-    public static Multimap<WrappedStack, List<WrappedStack>> getVanillaRecipes()
+    public static void registerRecipes()
     {
-        if (vanillaRecipes == null)
-        {
-            init();
-        }
-
-        return vanillaRecipes;
-    }
-
-    private static void init()
-    {
-        vanillaRecipes = HashMultimap.create();
-
         for (Object recipeObject : CraftingManager.getInstance().getRecipeList())
         {
             /**
@@ -45,11 +29,11 @@ public class RecipesVanilla
 
                 if (recipeOutput != null)
                 {
-                    ArrayList<WrappedStack> recipeInputs = RecipeHelper.getRecipeInputs(recipe);
+                    List<WrappedStack> recipeInputs = RecipeHelper.getRecipeInputs(recipe);
 
                     if (!recipeInputs.isEmpty())
                     {
-                        vanillaRecipes.put(new WrappedStack(recipeOutput), recipeInputs);
+                        RecipeRegistryProxy.addRecipe(recipeOutput, recipeInputs);
                     }
                 }
             }

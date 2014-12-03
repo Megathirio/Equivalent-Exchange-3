@@ -1,6 +1,10 @@
 package com.pahimar.ee3.tileentity;
 
 import com.pahimar.ee3.reference.Names;
+import com.pahimar.ee3.skill.PlayerKnowledge;
+import com.pahimar.ee3.util.PlayerKnowledgeHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -12,6 +16,8 @@ public class TileEntityResearchStation extends TileEntityEE implements IInventor
     public static final int INVENTORY_SIZE = 2;
     public static final int ITEM_SLOT_INVENTORY_INDEX = 0;
     public static final int TOME_SLOT_INVENTORY_INDEX = 1;
+
+    public int itemLearnTime;
 
     /**
      * The ItemStacks that hold the items currently being used in the Glass Bell
@@ -138,7 +144,8 @@ public class TileEntityResearchStation extends TileEntityEE implements IInventor
                 tagList.appendTag(tagCompound);
             }
         }
-        nbtTagCompound.setTag("Items", tagList);
+        nbtTagCompound.setTag(Names.NBT.ITEMS, tagList);
+        nbtTagCompound.setInteger("itemLearnTime", itemLearnTime);
     }
 
     @Override
@@ -147,7 +154,7 @@ public class TileEntityResearchStation extends TileEntityEE implements IInventor
         super.readFromNBT(nbtTagCompound);
 
         // Read in the ItemStacks in the inventory from NBT
-        NBTTagList tagList = nbtTagCompound.getTagList("Items", 10);
+        NBTTagList tagList = nbtTagCompound.getTagList(Names.NBT.ITEMS, 10);
         inventory = new ItemStack[this.getSizeInventory()];
         for (int i = 0; i < tagList.tagCount(); ++i)
         {
@@ -156,6 +163,58 @@ public class TileEntityResearchStation extends TileEntityEE implements IInventor
             if (slotIndex >= 0 && slotIndex < inventory.length)
             {
                 inventory[slotIndex] = ItemStack.loadItemStackFromNBT(tagCompound);
+            }
+        }
+        itemLearnTime = nbtTagCompound.getInteger("itemLearnTime");
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int getLearnProgressScaled(int scale)
+    {
+        return this.itemLearnTime * scale / 200;
+    }
+
+    @Override
+    public void updateEntity()
+    {
+        if (!this.worldObj.isRemote)
+        {
+            // Continue "cooking" the same item, if we can
+            if (this.canLearnItemStack())
+            {
+                this.itemLearnTime++;
+
+                if (this.itemLearnTime == 200)
+                {
+                    this.itemLearnTime = 0;
+                    this.learnItemStack();
+                }
+            }
+            else
+            {
+                this.itemLearnTime = 0;
+            }
+        }
+    }
+
+    private boolean canLearnItemStack()
+    {
+        return PlayerKnowledgeHelper.canLearnItemStack(inventory[ITEM_SLOT_INVENTORY_INDEX], inventory[TOME_SLOT_INVENTORY_INDEX]);
+    }
+
+    private void learnItemStack()
+    {
+        if (this.canLearnItemStack())
+        {
+            PlayerKnowledge playerKnowledge = PlayerKnowledge.readPlayerKnowledgeFromNBT(this.inventory[TOME_SLOT_INVENTORY_INDEX].getTagCompound());
+            playerKnowledge.learnItemStack(this.inventory[ITEM_SLOT_INVENTORY_INDEX]);
+            playerKnowledge.writeToNBT(this.inventory[TOME_SLOT_INVENTORY_INDEX].getTagCompound());
+
+            this.inventory[ITEM_SLOT_INVENTORY_INDEX].stackSize--;
+
+            if (this.inventory[ITEM_SLOT_INVENTORY_INDEX].stackSize <= 0)
+            {
+                this.inventory[ITEM_SLOT_INVENTORY_INDEX] = null;
             }
         }
     }

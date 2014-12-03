@@ -2,10 +2,12 @@ package com.pahimar.ee3.item;
 
 import com.pahimar.ee3.EquivalentExchange3;
 import com.pahimar.ee3.reference.Colors;
-import com.pahimar.ee3.reference.GuiIds;
+import com.pahimar.ee3.reference.GUIs;
 import com.pahimar.ee3.reference.Names;
 import com.pahimar.ee3.reference.Textures;
 import com.pahimar.ee3.util.ColorHelper;
+import com.pahimar.ee3.util.IOwnable;
+import com.pahimar.ee3.util.ItemHelper;
 import com.pahimar.ee3.util.NBTHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -21,7 +23,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ItemAlchemicalBag extends ItemEE implements IDyeable
+public class ItemAlchemicalBag extends ItemEE implements IOwnable
 {
     private static final String[] ALCHEMICAL_BAG_ICONS = {"open", "closed", "symbolTier1", "symbolTier2", "symbolTier3"};
 
@@ -95,10 +97,13 @@ public class ItemAlchemicalBag extends ItemEE implements IDyeable
     {
         if (!world.isRemote)
         {
+            // Set the owner
+            ItemHelper.setOwner(itemStack, entityPlayer);
+
             // Set a UUID on the Alchemical Bag, if one doesn't exist already
             NBTHelper.setUUID(itemStack);
             NBTHelper.setBoolean(itemStack, Names.NBT.ALCHEMICAL_BAG_GUI_OPEN, true);
-            entityPlayer.openGui(EquivalentExchange3.instance, GuiIds.ALCHEMICAL_BAG, entityPlayer.worldObj, (int) entityPlayer.posX, (int) entityPlayer.posY, (int) entityPlayer.posZ);
+            entityPlayer.openGui(EquivalentExchange3.instance, GUIs.ALCHEMICAL_BAG.ordinal(), entityPlayer.worldObj, (int) entityPlayer.posX, (int) entityPlayer.posY, (int) entityPlayer.posZ);
         }
 
         return itemStack;
@@ -118,19 +123,16 @@ public class ItemAlchemicalBag extends ItemEE implements IDyeable
         return bagColor;
     }
 
-    @Override
     public boolean hasColor(ItemStack itemStack)
     {
         return ColorHelper.hasColor(itemStack);
     }
 
-    @Override
     public int getColor(ItemStack itemStack)
     {
         return ColorHelper.getColor(itemStack);
     }
 
-    @Override
     public void setColor(ItemStack itemStack, int color)
     {
         if (itemStack != null)
@@ -142,7 +144,6 @@ public class ItemAlchemicalBag extends ItemEE implements IDyeable
         }
     }
 
-    @Override
     public void removeColor(ItemStack itemStack)
     {
         if (itemStack != null)

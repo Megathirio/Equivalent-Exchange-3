@@ -2,7 +2,7 @@ package com.pahimar.ee3.block;
 
 import com.pahimar.ee3.EquivalentExchange3;
 import com.pahimar.ee3.init.ModBlocks;
-import com.pahimar.ee3.reference.GuiIds;
+import com.pahimar.ee3.reference.GUIs;
 import com.pahimar.ee3.reference.Names;
 import com.pahimar.ee3.reference.Particles;
 import com.pahimar.ee3.reference.RenderIds;
@@ -110,7 +110,7 @@ public class BlockAludel extends BlockEE implements ITileEntityProvider
             {
                 if (world.getTileEntity(x, y, z) instanceof TileEntityAludel && world.getTileEntity(x, y + 1, z) instanceof TileEntityGlassBell)
                 {
-                    player.openGui(EquivalentExchange3.instance, GuiIds.ALUDEL, world, x, y, z);
+                    player.openGui(EquivalentExchange3.instance, GUIs.ALUDEL.ordinal(), world, x, y, z);
                 }
             }
 
@@ -131,7 +131,7 @@ public class BlockAludel extends BlockEE implements ITileEntityProvider
     {
         super.onBlockEventReceived(world, x, y, z, eventId, eventData);
         TileEntity tileentity = world.getTileEntity(x, y, z);
-        return tileentity != null ? tileentity.receiveClientEvent(eventId, eventData) : false;
+        return tileentity != null && tileentity.receiveClientEvent(eventId, eventData);
     }
 
     @Override

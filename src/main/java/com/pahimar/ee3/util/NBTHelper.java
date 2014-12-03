@@ -3,6 +3,7 @@ package com.pahimar.ee3.util;
 import com.pahimar.ee3.reference.Names;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 
 import java.util.UUID;
 
@@ -226,5 +227,45 @@ public class NBTHelper
         initNBTTagCompound(itemStack);
 
         itemStack.stackTagCompound.setDouble(keyName, keyValue);
+    }
+
+    // tag list
+    public static NBTTagList getTagList(ItemStack itemStack, String keyName, int nbtBaseType)
+    {
+        initNBTTagCompound(itemStack);
+
+        if (!itemStack.stackTagCompound.hasKey(keyName))
+        {
+            setTagList(itemStack, keyName, new NBTTagList());
+        }
+
+        return itemStack.stackTagCompound.getTagList(keyName, nbtBaseType);
+    }
+
+    public static void setTagList(ItemStack itemStack, String keyName, NBTTagList nbtTagList)
+    {
+        initNBTTagCompound(itemStack);
+
+        itemStack.stackTagCompound.setTag(keyName, nbtTagList);
+    }
+
+    // tag compound
+    public static NBTTagCompound getTagCompound(ItemStack itemStack, String keyName)
+    {
+        initNBTTagCompound(itemStack);
+
+        if (!itemStack.stackTagCompound.hasKey(keyName))
+        {
+            setTagCompound(itemStack, keyName, new NBTTagCompound());
+        }
+
+        return itemStack.stackTagCompound.getCompoundTag(keyName);
+    }
+
+    public static void setTagCompound(ItemStack itemStack, String keyName, NBTTagCompound nbtTagCompound)
+    {
+        initNBTTagCompound(itemStack);
+
+        itemStack.stackTagCompound.setTag(keyName, nbtTagCompound);
     }
 }

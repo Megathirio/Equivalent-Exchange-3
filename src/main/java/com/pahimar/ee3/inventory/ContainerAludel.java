@@ -2,20 +2,18 @@ package com.pahimar.ee3.inventory;
 
 import com.pahimar.ee3.item.ItemAlchemicalDust;
 import com.pahimar.ee3.tileentity.TileEntityAludel;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 
-public class ContainerAludel extends Container
+public class ContainerAludel extends ContainerEE
 {
-    private final int PLAYER_INVENTORY_ROWS = 3;
-    private final int PLAYER_INVENTORY_COLUMNS = 9;
     private TileEntityAludel tileEntityAludel;
     private int lastDeviceCookTime;
     private int lastFuelBurnTime;
@@ -28,7 +26,21 @@ public class ContainerAludel extends Container
         this.addSlotToContainer(new Slot(tileEntityAludel, TileEntityAludel.FUEL_INVENTORY_INDEX, 44, 74));
         this.addSlotToContainer(new Slot(tileEntityAludel, TileEntityAludel.INPUT_INVENTORY_INDEX, 44, 18));
         this.addSlotToContainer(new Slot(tileEntityAludel, TileEntityAludel.DUST_INVENTORY_INDEX, 44, 39));
-        this.addSlotToContainer(new SlotAludelOutput(tileEntityAludel, TileEntityAludel.OUTPUT_INVENTORY_INDEX, 120, 39));
+        this.addSlotToContainer(new Slot(tileEntityAludel, TileEntityAludel.OUTPUT_INVENTORY_INDEX, 120, 39)
+        {
+            @Override
+            public void onPickupFromSlot(EntityPlayer entityPlayer, ItemStack itemStack)
+            {
+                super.onPickupFromSlot(entityPlayer, itemStack);
+                FMLCommonHandler.instance().firePlayerCraftingEvent(entityPlayer, itemStack, inventory);
+            }
+
+            @Override
+            public boolean isItemValid(ItemStack itemStack)
+            {
+                return false;
+            }
+        });
 
         // Add the player's inventory slots to the container
         for (int inventoryRowIndex = 0; inventoryRowIndex < PLAYER_INVENTORY_ROWS; ++inventoryRowIndex)
@@ -177,11 +189,5 @@ public class ContainerAludel extends Container
         {
             this.tileEntityAludel.itemCookTime = updatedValue;
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer entityPlayer)
-    {
-        return true;
     }
 }

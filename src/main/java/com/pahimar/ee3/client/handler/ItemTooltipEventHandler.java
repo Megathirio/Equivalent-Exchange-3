@@ -1,8 +1,10 @@
 package com.pahimar.ee3.client.handler;
 
-import com.pahimar.ee3.exchange.EnergyValue;
+import com.pahimar.ee3.api.EnergyValue;
 import com.pahimar.ee3.exchange.EnergyValueRegistry;
 import com.pahimar.ee3.exchange.WrappedStack;
+import com.pahimar.ee3.util.IOwnable;
+import com.pahimar.ee3.util.ItemHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -35,18 +37,23 @@ public class ItemTooltipEventHandler
                 EnergyValue energyValue = EnergyValueRegistry.getInstance().getEnergyValue(stack);
                 if (stack.getStackSize() > 1)
                 {
-                    event.toolTip.add("Exchange Energy (Item): " + String.format("%s", energyValueDecimalFormat.format(energyValue.getValue())));
-                    event.toolTip.add("Exchange Energy (Stack): " + String.format("%s", energyValueDecimalFormat.format(stack.getStackSize() * energyValue.getValue())));
+                    event.toolTip.add("Exchange Energy (Item): " + String.format("%s", energyValueDecimalFormat.format(energyValue.getEnergyValue())));
+                    event.toolTip.add("Exchange Energy (Stack): " + String.format("%s", energyValueDecimalFormat.format(stack.getStackSize() * energyValue.getEnergyValue())));
                 }
                 else
                 {
-                    event.toolTip.add("Exchange Energy: " + String.format("%s", energyValueDecimalFormat.format(stack.getStackSize() * energyValue.getValue())));
+                    event.toolTip.add("Exchange Energy: " + String.format("%s", energyValueDecimalFormat.format(stack.getStackSize() * energyValue.getEnergyValue())));
                 }
             }
             else
             {
                 event.toolTip.add("No Exchange Energy value");
             }
+        }
+
+        if (event.itemStack.getItem() instanceof IOwnable)
+        {
+            event.toolTip.add("Owner: " + ItemHelper.getOwnerName(event.itemStack));
         }
     }
 }

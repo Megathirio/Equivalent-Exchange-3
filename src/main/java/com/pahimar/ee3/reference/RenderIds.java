@@ -7,4 +7,7 @@ public class RenderIds
     public static int alchemicalChest;
     public static int glassBell;
     public static int researchStation;
+    public static int augmentationTable;
+    public static int alchemyArray;
+    public static int dummyArray;
 }

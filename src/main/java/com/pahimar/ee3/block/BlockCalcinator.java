@@ -1,7 +1,7 @@
 package com.pahimar.ee3.block;
 
 import com.pahimar.ee3.EquivalentExchange3;
-import com.pahimar.ee3.reference.GuiIds;
+import com.pahimar.ee3.reference.GUIs;
 import com.pahimar.ee3.reference.Names;
 import com.pahimar.ee3.reference.Particles;
 import com.pahimar.ee3.reference.RenderIds;
@@ -76,7 +76,7 @@ public class BlockCalcinator extends BlockEE implements ITileEntityProvider
             {
                 if (world.getTileEntity(x, y, z) instanceof TileEntityCalcinator)
                 {
-                    player.openGui(EquivalentExchange3.instance, GuiIds.CALCINATOR, world, x, y, z);
+                    player.openGui(EquivalentExchange3.instance, GUIs.CALCINATOR.ordinal(), world, x, y, z);
                 }
             }
 
@@ -89,7 +89,7 @@ public class BlockCalcinator extends BlockEE implements ITileEntityProvider
     {
         super.onBlockEventReceived(world, x, y, z, eventId, eventData);
         TileEntity tileentity = world.getTileEntity(x, y, z);
-        return tileentity != null ? tileentity.receiveClientEvent(eventId, eventData) : false;
+        return tileentity != null && tileentity.receiveClientEvent(eventId, eventData);
     }
 
     @Override

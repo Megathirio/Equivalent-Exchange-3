@@ -2,23 +2,38 @@ package com.pahimar.ee3.skill;
 
 public class Skill
 {
-    private boolean learnable;
-    private boolean recoverable;
+    private final boolean canBeLearned;
+    private final boolean recoverable;
+    private final int knowledgeTier;
 
-    public Skill(boolean learnable, boolean recoverable)
+    public Skill()
     {
-        this.learnable = learnable;
+        this(true, true, 0);
+    }
+
+    public Skill(boolean canBeLearned, boolean recoverable)
+    {
+        this(canBeLearned, recoverable, 0);
+    }
+
+    public Skill(boolean canBeLearned, boolean recoverable, int tier)
+    {
+        this.canBeLearned = canBeLearned;
         this.recoverable = recoverable;
+
+        if (tier >= 0)
+        {
+            this.knowledgeTier = tier;
+        }
+        else
+        {
+            this.knowledgeTier = 0;
+        }
     }
 
-    public boolean isLearnable()
+    public boolean canBeLearned()
     {
-        return learnable;
-    }
-
-    public void setLearnable(boolean learnable)
-    {
-        this.learnable = learnable;
+        return canBeLearned;
     }
 
     public boolean isRecoverable()
@@ -26,20 +41,20 @@ public class Skill
         return recoverable;
     }
 
-    public void setRecoverable(boolean recoverable)
+    public int getKnowledgeTier()
     {
-        this.recoverable = recoverable;
+        return knowledgeTier;
     }
 
     @Override
     public boolean equals(Object object)
     {
-        return object instanceof Skill && (this.learnable == ((Skill) object).learnable && this.recoverable == ((Skill) object).recoverable);
+        return object instanceof Skill && (this.canBeLearned == ((Skill) object).canBeLearned && this.recoverable == ((Skill) object).recoverable && this.knowledgeTier == ((Skill) object).knowledgeTier);
     }
 
     @Override
     public String toString()
     {
-        return String.format("Skill[learnable: %s, recoverable: %s]", learnable, recoverable);
+        return String.format("Skill[canBeLearned: %s, recoverable: %s, knowledgeTier: %s]", canBeLearned, recoverable, knowledgeTier);
     }
 }

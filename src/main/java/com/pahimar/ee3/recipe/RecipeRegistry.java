@@ -1,15 +1,12 @@
 package com.pahimar.ee3.recipe;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.pahimar.ee3.exchange.WrappedStack;
-import com.pahimar.ee3.item.crafting.RecipeAludel;
-import com.pahimar.ee3.util.LogHelper;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class RecipeRegistry
 {
@@ -20,59 +17,6 @@ public class RecipeRegistry
     private RecipeRegistry()
     {
         recipeMap = HashMultimap.create();
-
-        init();
-    }
-
-    private void init()
-    {
-        // Add recipes in the vanilla crafting manager
-        for (WrappedStack outputStack : RecipesVanilla.getVanillaRecipes().keySet())
-        {
-            for (List<WrappedStack> inputStacks : RecipesVanilla.getVanillaRecipes().get(outputStack))
-            {
-                if (!recipeMap.get(outputStack).contains(inputStacks))
-                {
-                    recipeMap.put(outputStack, inputStacks);
-                }
-            }
-        }
-
-        // Add fluid container recipes
-        for (WrappedStack outputStack : RecipesFluidContainers.getFluidContainerRecipes().keySet())
-        {
-            for (List<WrappedStack> inputStacks : RecipesFluidContainers.getFluidContainerRecipes().get(outputStack))
-            {
-                if (!recipeMap.get(outputStack).contains(inputStacks))
-                {
-                    recipeMap.put(outputStack, inputStacks);
-                }
-            }
-        }
-
-        // Add potion recipes
-        for (WrappedStack outputStack : RecipesPotions.getPotionRecipes().keySet())
-        {
-            for (List<WrappedStack> inputStacks : RecipesPotions.getPotionRecipes().get(outputStack))
-            {
-                if (!recipeMap.get(outputStack).contains(inputStacks))
-                {
-                    recipeMap.put(outputStack, inputStacks);
-                }
-            }
-        }
-
-        // Add Aludel recipes
-        for (RecipeAludel recipeAludel : RecipesAludel.getInstance().getRecipes())
-        {
-            WrappedStack recipeOutput = new WrappedStack(recipeAludel.getRecipeOutput());
-            List<WrappedStack> recipeInputs = recipeAludel.getRecipeInputsAsWrappedStacks();
-
-            if (!recipeMap.get(recipeOutput).contains(recipeInputs))
-            {
-                recipeMap.put(recipeOutput, recipeInputs);
-            }
-        }
     }
 
     public static RecipeRegistry getInstance()
@@ -85,25 +29,47 @@ public class RecipeRegistry
         return recipeRegistry;
     }
 
-    public Multimap<WrappedStack, List<WrappedStack>> getRecipeMappings()
+    public void addRecipe(Object recipeOutput, List<?> recipeInputList)
     {
-        return recipeRegistry.recipeMap;
-    }
-
-    public void dumpRegistry()
-    {
-        // Sort the keys for output to console
-        SortedSet<WrappedStack> set = new TreeSet<WrappedStack>();
-        set.addAll(recipeMap.keySet());
-
-        for (WrappedStack key : set)
+        // Verify that the recipe output object can be wrapped
+        if (!WrappedStack.canBeWrapped(recipeOutput))
         {
-            Collection<List<WrappedStack>> recipeMappings = recipeMap.get(key);
+            return;
+        }
 
-            for (List<WrappedStack> recipeList : recipeMappings)
+        // Verify that every recipe input object can be wrapped
+        for (Object recipeInputObject : recipeInputList)
+        {
+            if (!WrappedStack.canBeWrapped(recipeInputObject))
             {
-                LogHelper.info(String.format("Recipe Output: %s, Recipe Input: %s", key.toString(), recipeList.toString()));
+                return;
             }
         }
+
+        // Wrap the recipe output
+        WrappedStack wrappedRecipeOutput = new WrappedStack(recipeOutput);
+        List<WrappedStack> wrappedRecipeInputList = new ArrayList<WrappedStack>();
+        for (Object recipeInputObject : recipeInputList)
+        {
+            wrappedRecipeInputList.add(new WrappedStack(recipeInputObject));
+        }
+
+        // Add the recipe mapping only if we don't already have it
+        if (!recipeMap.get(wrappedRecipeOutput).contains(wrappedRecipeInputList))
+        {
+            recipeMap.put(wrappedRecipeOutput, wrappedRecipeInputList);
+        }
+    }
+
+    public void registerVanillaRecipes()
+    {
+        RecipesVanilla.registerRecipes();
+        RecipesFluidContainers.registerRecipes();
+        RecipesPotions.registerRecipes();
+    }
+
+    public Multimap<WrappedStack, List<WrappedStack>> getRecipeMappings()
+    {
+        return ImmutableMultimap.copyOf(recipeRegistry.recipeMap);
     }
 }

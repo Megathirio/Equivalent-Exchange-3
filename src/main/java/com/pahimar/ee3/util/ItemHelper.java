@@ -1,12 +1,24 @@
 package com.pahimar.ee3.util;
 
+import com.pahimar.ee3.reference.Messages;
+import com.pahimar.ee3.reference.Names;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
 
 import java.util.Comparator;
+import java.util.UUID;
 
 public class ItemHelper
 {
+    public static ItemStack cloneItemStack(ItemStack itemStack, int stackSize)
+    {
+        ItemStack clonedItemStack = itemStack.copy();
+        clonedItemStack.stackSize = stackSize;
+        return clonedItemStack;
+    }
+
     public static Comparator<ItemStack> comparator = new Comparator<ItemStack>()
     {
         public int compare(ItemStack itemStack1, ItemStack itemStack2)
@@ -16,38 +28,46 @@ public class ItemHelper
                 // Sort on itemID
                 if (Item.getIdFromItem(itemStack1.getItem()) - Item.getIdFromItem(itemStack2.getItem()) == 0)
                 {
-                    // Then sort on meta
-                    if (itemStack1.getItemDamage() == itemStack2.getItemDamage())
+                    // Sort on item
+                    if (itemStack1.getItem() == itemStack2.getItem())
                     {
-                        // Then sort on NBT
-                        if (itemStack1.hasTagCompound() && itemStack2.hasTagCompound())
+                        // Then sort on meta
+                        if (itemStack1.getItemDamage() == itemStack2.getItemDamage())
                         {
-                            // Then sort on stack size
-                            if (itemStack1.getTagCompound().equals(itemStack2.getTagCompound()))
+                            // Then sort on NBT
+                            if (itemStack1.hasTagCompound() && itemStack2.hasTagCompound())
                             {
-                                return (itemStack1.stackSize - itemStack2.stackSize);
+                                // Then sort on stack size
+                                if (ItemStack.areItemStackTagsEqual(itemStack1, itemStack2))
+                                {
+                                    return (itemStack1.stackSize - itemStack2.stackSize);
+                                }
+                                else
+                                {
+                                    return (itemStack1.getTagCompound().hashCode() - itemStack2.getTagCompound().hashCode());
+                                }
+                            }
+                            else if (!(itemStack1.hasTagCompound()) && itemStack2.hasTagCompound())
+                            {
+                                return -1;
+                            }
+                            else if (itemStack1.hasTagCompound() && !(itemStack2.hasTagCompound()))
+                            {
+                                return 1;
                             }
                             else
                             {
-                                return (itemStack1.getTagCompound().hashCode() - itemStack2.getTagCompound().hashCode());
+                                return (itemStack1.stackSize - itemStack2.stackSize);
                             }
-                        }
-                        else if (!(itemStack1.hasTagCompound()) && itemStack2.hasTagCompound())
-                        {
-                            return -1;
-                        }
-                        else if (itemStack1.hasTagCompound() && !(itemStack2.hasTagCompound()))
-                        {
-                            return 1;
                         }
                         else
                         {
-                            return (itemStack1.stackSize - itemStack2.stackSize);
+                            return (itemStack1.getItemDamage() - itemStack2.getItemDamage());
                         }
                     }
                     else
                     {
-                        return (itemStack1.getItemDamage() - itemStack2.getItemDamage());
+                        return itemStack1.getItem().getUnlocalizedName(itemStack1).compareToIgnoreCase(itemStack2.getItem().getUnlocalizedName(itemStack2));
                     }
                 }
                 else
@@ -55,11 +75,11 @@ public class ItemHelper
                     return Item.getIdFromItem(itemStack1.getItem()) - Item.getIdFromItem(itemStack2.getItem());
                 }
             }
-            else if (itemStack1 != null && itemStack2 == null)
+            else if (itemStack1 != null)
             {
                 return -1;
             }
-            else if (itemStack1 == null && itemStack2 != null)
+            else if (itemStack2 != null)
             {
                 return 1;
             }
@@ -83,6 +103,40 @@ public class ItemHelper
         return (comparator.compare(first, second) == 0);
     }
 
+    public static boolean equalsIgnoreStackSize(ItemStack itemStack1, ItemStack itemStack2)
+    {
+        if (itemStack1 != null && itemStack2 != null)
+        {
+            // Sort on itemID
+            if (Item.getIdFromItem(itemStack1.getItem()) - Item.getIdFromItem(itemStack2.getItem()) == 0)
+            {
+                // Sort on item
+                if (itemStack1.getItem() == itemStack2.getItem())
+                {
+                    // Then sort on meta
+                    if (itemStack1.getItemDamage() == itemStack2.getItemDamage())
+                    {
+                        // Then sort on NBT
+                        if (itemStack1.hasTagCompound() && itemStack2.hasTagCompound())
+                        {
+                            // Then sort on stack size
+                            if (ItemStack.areItemStackTagsEqual(itemStack1, itemStack2))
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static int compare(ItemStack itemStack1, ItemStack itemStack2)
     {
         return comparator.compare(itemStack1, itemStack2);
@@ -96,5 +150,37 @@ public class ItemHelper
         }
 
         return "null";
+    }
+
+    public static boolean hasOwner(ItemStack itemStack)
+    {
+        return (NBTHelper.hasTag(itemStack, Names.NBT.OWNER_UUID_MOST_SIG) && NBTHelper.hasTag(itemStack, Names.NBT.OWNER_UUID_LEAST_SIG)) || NBTHelper.hasTag(itemStack, Names.NBT.OWNER);
+    }
+
+    public static String getOwnerName(ItemStack itemStack)
+    {
+        if (NBTHelper.hasTag(itemStack, Names.NBT.OWNER))
+        {
+            return NBTHelper.getString(itemStack, Names.NBT.OWNER);
+        }
+
+        return StatCollector.translateToLocal(Messages.NO_OWNER);
+    }
+
+    public static UUID getOwnerUUID(ItemStack itemStack)
+    {
+        if (NBTHelper.hasTag(itemStack, Names.NBT.OWNER_UUID_MOST_SIG) && NBTHelper.hasTag(itemStack, Names.NBT.OWNER_UUID_LEAST_SIG))
+        {
+            return new UUID(NBTHelper.getLong(itemStack, Names.NBT.OWNER_UUID_MOST_SIG), NBTHelper.getLong(itemStack, Names.NBT.OWNER_UUID_LEAST_SIG));
+        }
+
+        return null;
+    }
+
+    public static void setOwner(ItemStack itemStack, EntityPlayer entityPlayer)
+    {
+        NBTHelper.setString(itemStack, Names.NBT.OWNER, entityPlayer.getDisplayName());
+        NBTHelper.setLong(itemStack, Names.NBT.OWNER_UUID_MOST_SIG, entityPlayer.getUniqueID().getMostSignificantBits());
+        NBTHelper.setLong(itemStack, Names.NBT.OWNER_UUID_LEAST_SIG, entityPlayer.getUniqueID().getLeastSignificantBits());
     }
 }

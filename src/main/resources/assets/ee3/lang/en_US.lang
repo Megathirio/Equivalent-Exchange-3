@@ -1,11 +1,31 @@
-# Key localizations
+# Configuration
+general.transmutation=Transmutation Settings
+general.transmutation.knowledge.mode.label=Transmutation Knowledge Mode
+general.transmutation.knowledge.mode.comment=All - Player can learn all items that have a value, Select - Player can learn select items, Tier - Player can learn items below this tier level, Restricted - Player can only learn items listed in the restricted file, None - Player cannot learn any items
+
+general.sync.threshold.label=Sync Threshold
+general.sync.threshold.comment=The number of seconds a player must wait before they can sync their Energy Values with the server again
+
+general.transmutation.knowledge.maxTier.label=Highest Available Knowledge Tier
+general.transmutation.knowledge.maxTier.comment=The highest available knowledge tier for which players can learn transmutations
+
+general.transmutation.knowledge.template.label=Use Knowledge Template File
+general.transmutation.knowledge.template.comment=If true, new player's will have their transmutation knowledge copied from the knowledge template file (template.ee3)
+
+general.sound.soundMode.label=Sounds
+general.sound.soundMode.comment='All' plays mod sounds from all players, 'Self' only plays mod sounds from you, and 'None' plays no mod sounds
+
+# Keys
 key.categories.ee3=Equivalent Exchange 3
 key.charge=Charge
 key.extra=Extra
 key.release=Release
 key.toggle=Toggle
 
-# Item localizations
+# Creative Tabs
+itemGroup.ee3=Equivalent Exchange 3
+
+# Items
 item.ee3:alchemicalBag.name=Alchemical Bag
 item.ee3:alchemicalDust.ash.name=Ash
 item.ee3:alchemicalDust.verdant.name=Verdant Dust
@@ -20,13 +40,43 @@ item.ee3:shardMinium.name=Shard of Minium
 item.ee3:stoneInert.name=Inert Stone
 item.ee3:stoneMinium.name=Minium Stone [WIP]
 item.ee3:stonePhilosophers.name=Philosopher's Stone [WIP]
-item.ee3:alchemicalUpgrade.verdant.name=Verdant Upgrade
-item.ee3:alchemicalUpgrade.azure.name=Azure Upgrade
-item.ee3:alchemicalUpgrade.minium.name=Minium Upgrade
+item.ee3:alchemicalUpgrade.verdant.name=Verdant Upgrade [WIP]
+item.ee3:alchemicalUpgrade.azure.name=Azure Upgrade [WIP]
+item.ee3:alchemicalUpgrade.minium.name=Minium Upgrade [WIP]
 item.ee3:alchemicalTome.name=Tome of Alchemical Knowledge [WIP]
 item.ee3:guide.name=Guide To Alchemy [WIP]
+item.ee3:matterProto.name=Proto Matter [WIP]
+item.ee3:matterDark.name=Dark Matter [WIP]
+item.ee3:matterOmni.name=Omni Matter [WIP]
+item.ee3:matterCorporeal.name=Corporeal Matter [WIP]
+item.ee3:matterKinetic.name=Kinetic Matter [WIP]
+item.ee3:matterTemporal.name=Temporal Matter [WIP]
+item.ee3:matterEssentia.name=Essentia Matter [WIP]
+item.ee3:matterAmorphous.name=Amorphous Matter [WIP]
+item.ee3:matterVoid.name=Void Matter [WIP]
+item.ee3:gemBlack.name=Black Gem [WIP]
+item.ee3:gemBlue.name=Blue Gem [WIP]
+item.ee3:gemGreen.name=Green Gem [WIP]
+item.ee3:gemGrey.name=Grey Gem [WIP]
+item.ee3:gemPurple.name=Purple Gem [WIP]
+item.ee3:gemRed.name=Red Gem [WIP]
+item.ee3:gemYellow.name=Yellow Gem [WIP]
 
-# Block localizations
+# Tools
+item.ee3:shovelDarkMatter.name=Dark Matter Shovel [WIP]
+item.ee3:pickAxeDarkMatter.name=Dark Matter Pickaxe [WIP]
+item.ee3:hammerDarkMatter.name=Dark Matter Hammer [WIP]
+item.ee3:axeDarkMatter.name=Dark Matter Axe [WIP]
+item.ee3:hoeDarkMatter.name=Dark Matter Hoe [WIP]
+item.ee3:fishingRodDarkMatter.name=Dark Matter Fishing Rod [WIP]
+item.ee3:shearsDarkMatter.name=Dark Matter Shears [WIP]
+
+# Weapons
+item.ee3:bowDarkMatter.name=Dark Matter Bow [WIP]
+item.ee3:arrowDarkMatter.name=Dark Matter Arrow [WIP]
+item.ee3:swordDarkMatter.name=Dark Matter Sword [WIP]
+
+# Blocks
 tile.ee3:alchemicalChest.name=Alchemical Chest
 tile.ee3:alchemicalFuelBlock.alchemicalCoal.name=Block of Alchemical Coal
 tile.ee3:alchemicalFuelBlock.mobiusFuel.name=Block of Mobius Fuel
@@ -35,44 +85,57 @@ tile.ee3:aludel.name=Aludel Base
 tile.ee3:calcinator.name=Calcinator
 tile.ee3:chalk.name=Chalk
 tile.ee3:glassBell.name=Glass Bell
-tile.ee3:researchStation.name=Research Station [WIP]
+tile.ee3:researchStation.name=Research Station
+tile.ee3:augmentationTable.name=Augmentation Table [WIP]
+tile.ee3:transmutationSquare.name=Transmutation Square [WIP]
 
-# GUI localizations
+# GUIs
 container.ee3:alchemicalBag=Alchemical Bag
 container.ee3:alchemicalChest=Alchemical Chest
 container.ee3:aludel=Aludel
 container.ee3:calcinator=Calcinator
 container.ee3:glassBell=Glass Bell
-container.ee3:researchStation=Research Station [WIP]
+container.ee3:researchStation=Research Station
+container.ee3:augmentationTable=Augmentation Table [WIP]
+container.ee3:alchemicalTome=Tome of Alchemical Knowledge [WIP]
+container.ee3:transmutationSquare=Transmutation Square [WIP]
 
-# Command localizations
-command.ee3:overlay.turned_on=Target transmutation overlay turned on
-command.ee3:overlay.turned_off=Target transmutation overlay turned off
-command.ee3:overlay.position.top_left=Target transmutation overlay position set to top left
-command.ee3:overlay.position.top_right=Target transmutation overlay position set to top right
-command.ee3:overlay.position.bottom_left=Target transmutation overlay position set to bottom left
-command.ee3:overlay.position.bottom_right=Target transmutation overlay position set to bottom right
-command.ee3:overlay.opacity.usage.additional_text=(where ### is a decimal value between 0.0 and 1.0) 
-command.ee3:overlay.opacity.updated=Target transmutation overlay opacity updated successfully
-command.ee3:overlay.scale.usage.additional_text=%s (where ### is a decimal value greater than 0.0) 
-command.ee3:overlay.scale.updated=Target transmutation overlay scale updated successfully
-command.ee3:particles.turned_on=Equivalent Exchange 3 particles turned on
-command.ee3:particles.turned_off=Equivalent Exchange 3 particles turned off
-command.ee3:sounds.set_to_all=Playing Equivalent Exchange 3 sounds from all players
-command.ee3:sounds.set_to_self=Playing Equivalent Exchange 3 sounds from self only
-command.ee3:sounds.turned_off=Playing Equivalent Exchange 3 sounds disabled
+# NEI
+gui.nei.ee3:calcination=Calcination
+gui.nei.ee3:calcination.tooltip.1=Energy values needed to calcine
+gui.nei.ee3:calcination.tooltip.2=From %s to %s
+gui.nei.ee3:aludel=Aludel
 
-# Version check localizations
-version.ee3:init_log_message=Initializing remote version check against remote version authority, located at: %s
-version.ee3:uninitialized=Remote version check failed to initialize properly
-version.ee3:current=Currently using the most up to date version (%s) of Equivalent Exchange 3 for %s
-version.ee3:outdated=A new %s version exists (%s) for %s. Get it here: %s
-version.ee3:general_error=Error while connecting to remote version authority file; trying again
-version.ee3:final_error=Version check stopping after three unsuccessful connection attempts
-version.ee3:mc_version_not_found=Unable to find a version of %s for %s in the remote version authority
+# Glyphs
+glyph.ee3:baseCircle=Circle (Base)
+glyph.ee3:circle=Circle
+glyph.ee3:diamond=Diamond
+glyph.ee3:dot=Dot
+glyph.ee3:heptagon=Heptagon
+glyph.ee3:hexagon=Hexagon
+glyph.ee3:invertedTriangle=Triangle (Inverted)
+glyph.ee3:line=Line
+glyph.ee3:octagon=Octagon
+glyph.ee3:pentagon=Pentagon
+glyph.ee3:square=Square
+glyph.ee3:triangle=Triangle
 
-# Tooltip localizations
+# Commands
+command.ee3.usage=/ee3 <set-value|sync-values>
+command.ee3.set-value.usage=/ee3-set-value <pre|post> <item> <value> [data] [dataTag]
+command.ee3.set-value.success=%s set a %s EnergyValue of %s to %s
+command.ee3.set-value.tagError=Data tag parsing failed: %s
+command.ee3.set-current-item-value.usage=/ee3-set-current-item-value <pre|post> <value>
+command.ee3.set-current-item-value.success=%s set a %s EnergyValue of %s to %s
+command.ee3.sync-values.usage=/ee3-sync-values <self|all>
+command.ee3.sync-values.self.success=Successfully synchronized EnergyValues with the server
+command.ee3.sync-values.self.denied=Please wait %s more seconds and try again
+command.ee3.sync-values.all.success=%s synchronized all EnergyValues with all players on the server
+command.ee3.sync-values.all.denied=Only ops can use this command
+
+# Tooltips
 tooltip.ee3:upgradesPrefix=Upgrades (Alchemical) Chests
 tooltip.ee3:alchemicalChestPrefix.small=Small
 tooltip.ee3:alchemicalChestPrefix.medium=Medium
 tooltip.ee3:alchemicalChestPrefix.large=Large
+tooltip.ee3:none=None

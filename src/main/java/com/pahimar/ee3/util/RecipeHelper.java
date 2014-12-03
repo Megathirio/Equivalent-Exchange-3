@@ -29,7 +29,7 @@ public class RecipeHelper
      * @param recipe The IRecipe being examined
      * @return List of elements that constitute the input of the given IRecipe. Could be an ItemStack or an Arraylist
      */
-    public static ArrayList<WrappedStack> getRecipeInputs(IRecipe recipe)
+    public static List<WrappedStack> getRecipeInputs(IRecipe recipe)
     {
         ArrayList<WrappedStack> recipeInputs = new ArrayList<WrappedStack>();
 
@@ -129,7 +129,7 @@ public class RecipeHelper
             }
         }
 
-        return recipeInputs;
+        return collateInputStacks(recipeInputs);
     }
 
     /**

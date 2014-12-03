@@ -1,7 +1,7 @@
 package com.pahimar.ee3.block;
 
 import com.pahimar.ee3.EquivalentExchange3;
-import com.pahimar.ee3.reference.GuiIds;
+import com.pahimar.ee3.reference.GUIs;
 import com.pahimar.ee3.reference.Names;
 import com.pahimar.ee3.reference.RenderIds;
 import com.pahimar.ee3.tileentity.TileEntityAlchemicalChest;
@@ -78,7 +78,7 @@ public class BlockAlchemicalChest extends BlockEE implements ITileEntityProvider
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9)
     {
-        if (player.isSneaking() || world.isSideSolid(x, y + 1, z, ForgeDirection.DOWN))
+        if ((player.isSneaking() && player.getCurrentEquippedItem() != null) || world.isSideSolid(x, y + 1, z, ForgeDirection.DOWN))
         {
             return true;
         }
@@ -86,7 +86,7 @@ public class BlockAlchemicalChest extends BlockEE implements ITileEntityProvider
         {
             if (!world.isRemote && world.getTileEntity(x, y, z) instanceof TileEntityAlchemicalChest)
             {
-                player.openGui(EquivalentExchange3.instance, GuiIds.ALCHEMICAL_CHEST, world, x, y, z);
+                player.openGui(EquivalentExchange3.instance, GUIs.ALCHEMICAL_CHEST.ordinal(), world, x, y, z);
             }
 
             return true;
@@ -98,7 +98,7 @@ public class BlockAlchemicalChest extends BlockEE implements ITileEntityProvider
     {
         super.onBlockEventReceived(world, x, y, z, eventId, eventData);
         TileEntity tileentity = world.getTileEntity(x, y, z);
-        return tileentity != null ? tileentity.receiveClientEvent(eventId, eventData) : false;
+        return tileentity != null && tileentity.receiveClientEvent(eventId, eventData);
     }
 
     @Override

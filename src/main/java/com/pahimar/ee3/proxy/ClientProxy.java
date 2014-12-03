@@ -1,13 +1,16 @@
 package com.pahimar.ee3.proxy;
 
-import com.pahimar.ee3.client.configuration.ClientConfiguration;
+import com.pahimar.ee3.client.handler.DrawBlockHighlightEventHandler;
+import com.pahimar.ee3.client.handler.HUDTickHandler;
 import com.pahimar.ee3.client.handler.ItemTooltipEventHandler;
 import com.pahimar.ee3.client.handler.KeyInputEventHandler;
 import com.pahimar.ee3.client.renderer.item.*;
 import com.pahimar.ee3.client.renderer.tileentity.*;
 import com.pahimar.ee3.client.settings.Keybindings;
+import com.pahimar.ee3.client.util.ClientSoundHelper;
 import com.pahimar.ee3.init.ModBlocks;
 import com.pahimar.ee3.reference.RenderIds;
+import com.pahimar.ee3.settings.ChalkSettings;
 import com.pahimar.ee3.tileentity.*;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -16,16 +19,18 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.io.File;
-
 public class ClientProxy extends CommonProxy
 {
+    public ChalkSettings chalkSettings = new ChalkSettings();
+
     @Override
     public void registerEventHandlers()
     {
         super.registerEventHandlers();
         FMLCommonHandler.instance().bus().register(new KeyInputEventHandler());
+        FMLCommonHandler.instance().bus().register(new HUDTickHandler());
         MinecraftForge.EVENT_BUS.register(new ItemTooltipEventHandler());
+        MinecraftForge.EVENT_BUS.register(new DrawBlockHighlightEventHandler());
     }
 
     @Override
@@ -38,9 +43,15 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    public void initClientConfiguration(File configFile)
+    public void playSound(String soundName, float xCoord, float yCoord, float zCoord, float volume, float pitch)
     {
-        ClientConfiguration.init(configFile);
+        ClientSoundHelper.playSound(soundName, xCoord, yCoord, zCoord, volume, pitch);
+    }
+
+    @Override
+    public ClientProxy getClientProxy()
+    {
+        return this;
     }
 
     @Override
@@ -51,17 +62,23 @@ public class ClientProxy extends CommonProxy
         RenderIds.alchemicalChest = RenderingRegistry.getNextAvailableRenderId();
         RenderIds.glassBell = RenderingRegistry.getNextAvailableRenderId();
         RenderIds.researchStation = RenderingRegistry.getNextAvailableRenderId();
+        RenderIds.augmentationTable = RenderingRegistry.getNextAvailableRenderId();
+        RenderIds.alchemyArray = RenderingRegistry.getNextAvailableRenderId();
+        RenderIds.dummyArray = RenderingRegistry.getNextAvailableRenderId();
 
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.alchemicalChest), new ItemAlchemicalChestRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.aludel), new ItemAludelRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.calcinator), new ItemCalcinatorRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.glassBell), new ItemGlassBellRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.researchStation), new ItemResearchStationRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.alchemicalChest), new ItemRendererAlchemicalChest());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.aludel), new ItemRendererAludel());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.calcinator), new ItemRendererCalcinator());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.glassBell), new ItemRendererGlassBell());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.researchStation), new ItemRendererResearchStation());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.augmentationTable), new ItemRendererAugmentationTable());
 
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAlchemicalChest.class, new TileEntityAlchemicalChestRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCalcinator.class, new TileEntityCalcinatorRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAludel.class, new TileEntityAludelRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGlassBell.class, new TileEntityGlassBellRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityResearchStation.class, new TileEntityResearchStationRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAlchemicalChest.class, new TileEntityRendererAlchemicalChest());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCalcinator.class, new TileEntityRendererCalcinator());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAludel.class, new TileEntityRendererAludel());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGlassBell.class, new TileEntityRendererGlassBell());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityResearchStation.class, new TileEntityRendererResearchStation());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAugmentationTable.class, new TileEntityRendererAugmentationTable());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAlchemyArray.class, new TileEntityRendererAlchemyArray());
     }
 }

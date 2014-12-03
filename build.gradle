@@ -15,7 +15,23 @@ buildscript {
     }
 }
 
+apply plugin: 'java'
 apply plugin: 'forge'
+apply plugin: 'maven'
+
+repositories {
+    maven { // The repo from which to get waila
+        name "Mobius Repo"
+        url "http://mobiusstrip.eu/maven"
+    }
+    maven { // the repo from which to get NEI and stuff
+        name 'CB Repo'
+        url "http://chickenbones.net/maven/"
+    }
+}
+dependencies {
+    compile "mcp.mobius.waila:Waila:1.5.6_dev1_1.7.10"
+}
 
 ext.configFile = file "build.properties"
 
@@ -31,7 +47,6 @@ archivesBaseName = "EquivalentExchange3"
 
 minecraft {
     version = config.minecraft_version + "-" + config.forge_version
-    assetDir = "run/assets"
 
     replaceIn "reference/Reference.java"
     replace "@VERSION@", "${config.mod_version}.${System.getenv("BUILD_NUMBER") ?: 0}"
@@ -60,6 +75,18 @@ processResources {
     }
 }
 
+task devJar(type: Jar, dependsOn: 'classes') {
+    from(sourceSets.main.output) {
+        include '**'
+    }
+
+    extension = 'jar'
+    classifier = 'dev'
+}
+
+artifacts {
+    archives devJar
+}
 
 import net.minecraftforge.gradle.delayed.*
 import net.minecraftforge.gradle.tasks.dev.ChangelogTask
@@ -75,7 +102,7 @@ task createChangelog(type: ChangelogTask) {
         setAuthName(new DelayedString(project, project.jenkins_user))
         setAuthPassword(new DelayedString(project, project.jenkins_password))
         setTargetBuild({ buildNumber.toString() });
-        setOutput(new DelayedFile(project, 'build/libs/' + project.getName() + '-' + project.version + '-changelog.txt'));
+        setOutput(new DelayedFile(project, 'build/libs/' + project.archivesBaseName + '-' + project.version + '-changelog.txt'));
     }
 
     onlyIf {
@@ -84,3 +111,106 @@ task createChangelog(type: ChangelogTask) {
 }
 
 tasks.build.dependsOn('createChangelog')
+tasks.build.dependsOn('signJar')
+
+if (!project.hasProperty("keystore_location")) // keystore stuff
+    ext.keystore_location = "."
+if (!project.hasProperty("keystore_password")) // keystore stuff
+    ext.keystore_password = ""
+if (!project.hasProperty("ee3_keystore_alias")) // keystore stuff
+    ext.ee3_keystore_alias = ""
+
+task signJar(dependsOn: ["reobf", "devJar"]) {
+    inputs.dir jar.destinationDir
+    inputs.file keystore_location
+    inputs.property "ee3_keystore_alias", ee3_keystore_alias
+    inputs.property "keystore_password", keystore_password
+    outputs.dir devJar.destinationDir
+
+    // only sign if the keystore exists
+    onlyIf {
+        return keystore_location != "." && keystore_password != ""
+    }
+    // the actual action.. sign the jar.
+    doLast {
+        jar.destinationDir.eachFile { file ->
+            if (!file.getPath().endsWith(".jar"))
+                return; // skip non-jars
+
+            logger.lifecycle "signing $file"
+            ant.signjar(
+                    destDir: file.getParentFile(), // same place it came from
+                    jar: file,
+                    keystore: keystore_location,
+                    alias: ee3_keystore_alias,
+                    storepass: keystore_password
+            )
+        }
+    }
+}
+
+task copyChicken(type: Copy, dependsOn: "extractUserDev") {
+    from { configurations.compile }
+    include "**/*Chicken*.jar", "**/*NotEnoughItems*.jar"
+    exclude "**/CodeChickenLib*" // because CCC downloads it anyways.. -_-
+    into file("./run/mods") // paralell to the assets dir
+    mustRunAfter "deobfBinJar"
+    mustRunAfter "repackMinecraft"
+}
+tasks.setupDevWorkspace.dependsOn copyChicken
+tasks.setupDecompWorkspace.dependsOn copyChicken
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            if (project.hasProperty("forgemaven_url")) {
+                logger.info('Publishing to files server')
+                repository(url: project.forgemaven_url) {
+                    authentication(userName: project.forgemaven_username, password: project.forgemaven_password)
+                }
+            }
+
+            pom {
+                groupId = project.group
+                version = project.version
+                artifactId = project.archivesBaseName
+            }
+
+            pom.project {
+                name project.archivesBaseName
+                packaging 'jar'
+                description 'Equivalent Exchange 3'
+                url 'https://github.com/pahimar/Equivalent-Exchange-3/'
+
+                scm {
+                    url 'https://github.com/pahimar/Equivalent-Exchange-3/'
+                    connection 'scm:git:git://github.com/pahimar/Equivalent-Exchange-3.git'
+                    developerConnection 'scm:git:git@github.com/pahimar/Equivalent-Exchange-3.git'
+                }
+
+                issueManagement {
+                    system 'github'
+                    url 'https://github.com/pahimar/Equivalent-Exchange-3/issues'
+                }
+
+                licenses {
+                    license {
+                        name 'GNU Lesser General Public License 3.0'
+                        url 'https://www.gnu.org/licenses/lgpl-3.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'Pahimar'
+                        name 'Pahimar'
+                        roles {
+                            role 'developer'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

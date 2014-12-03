@@ -1,13 +1,11 @@
 package com.pahimar.ee3.proxy;
 
-import java.io.File;
-
 public class ServerProxy extends CommonProxy
 {
     @Override
-    public void initClientConfiguration(File configFile)
+    public ClientProxy getClientProxy()
     {
-        // NOOP
+        return null;
     }
 
     @Override
@@ -18,6 +16,12 @@ public class ServerProxy extends CommonProxy
 
     @Override
     public void registerKeybindings()
+    {
+        // NOOP
+    }
+
+    @Override
+    public void playSound(String soundName, float xCoord, float yCoord, float zCoord, float volume, float pitch)
     {
         // NOOP
     }

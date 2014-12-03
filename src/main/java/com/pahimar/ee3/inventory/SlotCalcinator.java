@@ -8,9 +8,9 @@ import net.minecraft.item.ItemStack;
 
 public class SlotCalcinator extends Slot
 {
-    public SlotCalcinator(IInventory inventory, int x, int y, int z)
+    public SlotCalcinator(IInventory inventory, int slotIndex, int x, int y)
     {
-        super(inventory, x, y, z);
+        super(inventory, slotIndex, x, y);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class SlotCalcinator extends Slot
     }
 
     @Override
-    public boolean isItemValid(ItemStack par1ItemStack)
+    public boolean isItemValid(ItemStack itemStack)
     {
         return false;
     }
